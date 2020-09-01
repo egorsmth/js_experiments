@@ -1,12 +1,12 @@
-const logger = require('../logger')
+const {getLogger} = require('../logger')
 
 module.exports = {
     dashboard,
 }
 
 function dashboard(req, res) {
-    for (let level of Object.keys(logger.levels)) {
-        logger[level](`This is ${level}`);
+    for (let level of Object.keys(getLogger().levels)) {
+        getLogger()[level](`This is ${level}`);
     }
 
     res.send("dashboard 1");

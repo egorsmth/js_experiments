@@ -1,17 +1,19 @@
-const jwt = require("jsonwebtoken");
-const config = require("../consfig");
+const { getUser } = require('../enteties/user')
+const { sign, compare } = require('../services/auth')
 
-function login(req, res) {
-  let userValid = true;
-  if (userValid) {
-    const token = jwt.sign({ id: "some-user-id" }, config.jwt_secret, {
-      expiresIn: 86400 // 24 hours
-    });
-    res.send({
-      accessToken: token,
+async function login(req, res) {
+  const user = await getUser().findOne({ where: { name: req.body.username } })
+
+  if (user && await compare(req.body.password, user.pass)) {
+    const accessToken = await sign({ id: user.id });
+    return res.send({
+      accessToken,
     })
-
   }
+
+  res.status(400).send({
+    message: 'wrong login or password',
+  });
 }
 
 module.exports = {

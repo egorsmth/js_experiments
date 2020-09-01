@@ -8,6 +8,9 @@ export default {
     }
   },
   routs: {
-    dashboard: "/dashboard"
+    dashboard: "/dashboard",
+    login: '/login',
+    logout: '/logout',
+    registration: '/registration'
   }
 }

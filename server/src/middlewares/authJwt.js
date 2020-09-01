@@ -1,6 +1,7 @@
-const jwt = require("jsonwebtoken");
+const { getLogger } = require('../logger');
+const { verify } = require('../services/auth')
 
-function verifyToken(req, res, next) {
+async function verifyToken(req, res, next) {
   let token = req.headers["x-access-token"];
 
   if (!token) {
@@ -9,15 +10,16 @@ function verifyToken(req, res, next) {
     });
   }
 
-  jwt.verify(token, config.secret, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({
-        message: "Unauthorized!"
-      });
-    }
+  try {
+    const decode = await verify(token);
     req.userId = decoded.id;
     next();
-  });
+  } catch (err) {
+    getLogger().warn(err);
+    return res.status(401).send({
+      message: "Unauthorized!"
+    });
+  }
 };
 
 module.exports = verifyToken;
