@@ -20,7 +20,6 @@ async function login(username, password) {
       username,
       password
     });
-    debugger
     if (response.data.accessToken) {
       _setAccessToken(response.data.accessToken);
     }
@@ -37,7 +36,6 @@ async function registration(username, password) {
       username,
       password
     });
-    console.log(response);
     if (response.data.accessToken) {
       _setAccessToken(response.data.accessToken);
     }

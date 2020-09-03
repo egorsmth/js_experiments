@@ -6,9 +6,13 @@ import { registration } from "../services/auth"
 export default class RegistrationForm extends React.Component {
   constructor(props) {
     super(props);
+    if (localStorage.key('user')) {
+      this.props.history.push(config.routs.dashboard);
+      window.location.reload();
+    }
     this.state = {
-      login: { value: '' },
-      password: { value: '' },
+      username: { error: '', value: '' },
+      password: { error: '', value: '' },
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -16,23 +20,33 @@ export default class RegistrationForm extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({
-      ...this.state,
-      [event.target.name]: event.target.value,
-    });
+    const state = { ...this.state };
+    state[event.target.name].value = event.target.value;
+    this.setState(state);
   }
 
   async handleSubmit(event) {
     event.preventDefault();
-    const response = await registration(this.state.login, this.state.password);
-    if (!response) {
-      throw new Error("No response from registration");
+    const response = await registration(this.state.username.value, this.state.password.value);
+
+    if (response && response.error) {
+      const state = { ...this.state };
+      for (let err of response.error.details) {
+        const key = err.path[err.path.length - 1];
+        state[key].error = err.message;
+        state[key].value = err.value;
+      }
+      return this.setState(state);
     }
     this.props.history.push(config.routs.dashboard);
     window.location.reload();
   }
 
   render() {
+    let nameError = "";
+    let passError = "";
+    if (this.state.username.error) nameError = <p style={{ color: 'red' }} >{this.state.username.error}</p>
+    if (this.state.password.error) passError = <p style={{ color: 'red' }}>{this.state.password.error}</p>
     return (
       <div>
         <h1>Registration</h1>

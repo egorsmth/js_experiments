@@ -21,7 +21,7 @@ export default class LoginForm extends React.Component {
   }
 
   handleChange(event) {
-    const state = {...this.state};
+    const state = { ...this.state };
     state[event.target.name].value = event.target.value;
     this.setState(state);
   }
@@ -29,9 +29,9 @@ export default class LoginForm extends React.Component {
   async handleSubmit(event) {
     event.preventDefault();
     const response = await login(this.state.username.value, this.state.password.value);
-    
+
     if (response && response.error) {
-      const state = {...this.state};
+      const state = { ...this.state };
       for (let err of response.error.details) {
         const key = err.path[err.path.length - 1];
         state[key].error = err.message;
@@ -46,8 +46,8 @@ export default class LoginForm extends React.Component {
   render() {
     let nameError = "";
     let passError = "";
-    if (this.state.username.error) nameError = <p style={{color: 'red'}} >{this.state.username.error}</p>
-    if (this.state.password.error) passError = <p style={{color: 'red'}}>{this.state.password.error}</p>
+    if (this.state.username.error) nameError = <p style={{ color: 'red' }} >{this.state.username.error}</p>
+    if (this.state.password.error) passError = <p style={{ color: 'red' }}>{this.state.password.error}</p>
     return (
       <div>
         <h1>Login</h1>
