@@ -1,19 +1,23 @@
-const { getUser } = require('../enteties/user')
-const { sign, compare } = require('../services/auth')
+const { login : loginModel } = require('../models/auth');
+const { sign } = require('../services/security')
+const { getLogger } = require('../logger');
 
 async function login(req, res) {
-  const user = await getUser().findOne({ where: { name: req.body.username } })
-
-  if (user && await compare(req.body.password, user.pass)) {
+  try {
+    const user = await loginModel(req.body.username, req.body.password);
     const accessToken = await sign({ id: user.id });
-    return res.send({
-      accessToken,
-    })
-  }
+    return res
+      .send({
+        accessToken,
+      });
 
-  res.status(400).send({
-    message: 'wrong login or password',
-  });
+  } catch (err) {
+    getLogger().warn(err.stack);
+    return res.status(400)
+      .send({
+        message: 'wrong login or password',
+      });
+  }
 }
 
 module.exports = {

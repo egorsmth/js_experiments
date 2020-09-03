@@ -12,8 +12,8 @@ export default class LoginForm extends React.Component {
       window.location.reload();
     }
     this.state = {
-      login: { value: '' },
-      password: { value: '' },
+      username: { error: '', value: '' },
+      password: { error: '', value: '' },
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -21,31 +21,46 @@ export default class LoginForm extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({
-      ...this.state,
-      [event.target.name]: event.target.value,
-    });
+    const state = {...this.state};
+    state[event.target.name].value = event.target.value;
+    this.setState(state);
   }
 
   async handleSubmit(event) {
     event.preventDefault();
-    const response = await login(this.state.login, this.state.password);
+    const response = await login(this.state.username.value, this.state.password.value);
+    
+    if (response && response.error) {
+      const state = {...this.state};
+      for (let err of response.error.details) {
+        const key = err.path[err.path.length - 1];
+        state[key].error = err.message;
+        state[key].value = err.value;
+      }
+      return this.setState(state);
+    }
     this.props.history.push(config.routs.dashboard);
     window.location.reload();
   }
 
   render() {
+    let nameError = "";
+    let passError = "";
+    if (this.state.username.error) nameError = <p style={{color: 'red'}} >{this.state.username.error}</p>
+    if (this.state.password.error) passError = <p style={{color: 'red'}}>{this.state.password.error}</p>
     return (
       <div>
         <h1>Login</h1>
         <form onSubmit={this.handleSubmit}>
-          <label>Name
+          <label>Username
             <br></br>
-            <input type="text" name="login" value={this.state.login.value} onChange={this.handleChange}></input>
+            {nameError}
+            <input type="text" name="username" value={this.state.username.value} onChange={this.handleChange}></input>
             <br></br>
           </label>
           <label>Password
             <br></br>
+            {passError}
             <input type="password" name="password" value={this.state.password.value} onChange={this.handleChange}></input>
             <br></br>
           </label>
