@@ -1,4 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
+const { getProduct } = require('./product')
+const { getPurchase } = require('./purchase')
 
 let user;
 
@@ -17,10 +19,6 @@ async function init(db) {
       unique: true,
       fields: ['name'],
     }]
-  });
-
-  await user.sync({
-    alter: true,
   });
 }
 

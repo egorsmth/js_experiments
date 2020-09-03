@@ -4,7 +4,10 @@ export default {
     routs: {
       login: "/login",
       dashboard: "/dashboard",
-      registration: "/registration"
+      registration: "/registration",
+      users: "/users",
+      products: "/products",
+      purchase: "/purchase",
     }
   },
   routs: {

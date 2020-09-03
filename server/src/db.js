@@ -3,7 +3,9 @@ const { Sequelize } = require('sequelize');
 const { user, pass, host, port, dbname } = require('./config').db;
 const { getLogger } = require('./logger');
 
-const { init: initUser } = require('./enteties/user');
+const { init: initUser, getUser } = require('./enteties/user');
+const { init: initPurchase, getPurchase } = require('./enteties/purchase');
+const { init: initProduct, getProduct } = require('./enteties/product');
 
 let db;
 
@@ -15,7 +17,16 @@ async function init() {
     }
   });
 
+  await initPurchase(db);
+  await initProduct(db);
   await initUser(db);
+
+  getUser().belongsToMany(getProduct(), { through: getPurchase() });
+  getProduct().belongsToMany(getUser(), { through: getPurchase() });
+
+  await db.sync({
+    alter: true,
+  });
 }
 
 function getDb() {
