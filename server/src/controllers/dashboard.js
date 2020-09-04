@@ -13,8 +13,6 @@ async function dashboard(req, res) {
         }
     });
 
-
-
     const products = await getPurchase().findAll({
         group: ["product.id"],
         attributes: [
