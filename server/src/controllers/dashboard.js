@@ -29,7 +29,7 @@ async function createPurchase(req, res) {
         quantity: req.body.quantity,
     });
 
-    return res.status(200);
+    return res.status(200).send();
 }
 
 module.exports = {

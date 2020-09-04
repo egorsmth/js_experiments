@@ -27,12 +27,13 @@ class Dashboard extends React.Component {
       this.props.history.push(config.routs.logout);
       window.location.reload();
     }
+
     this.setState({
       data,
       users,
-      user: '',
+      user: users && users.length ? users[0].id : '',
       products,
-      product: '',
+      product: products && products.length ? products[0].id : '',
       quantity: 0,
       loading: false,
     })
@@ -40,7 +41,7 @@ class Dashboard extends React.Component {
 
   handleChange(event) {
     event.preventDefault();
-
+    
     const state = { ...this.state };
     state[event.target.name] = event.target.value;
     this.setState(state);
@@ -70,10 +71,10 @@ class Dashboard extends React.Component {
     let usersSelect = [];
     let productSelect = [];
     for (let user of this.state.users) {
-      usersSelect.push(<option value={user.id}>{user.name}</option>);
+      usersSelect.push(<option key={user.id} value={user.id}>{user.name}</option>);
     }
     for (let product of this.state.products) {
-      productSelect.push(<option value={product.id}>{product.name} - {product.price} $</option>);
+      productSelect.push(<option key={product.id} value={product.id}>{product.name} - {product.price} $</option>);
     }
 
     return (

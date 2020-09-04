@@ -4,6 +4,11 @@ let purchase;
 
 async function init(db) {
   purchase = db.define('purchase', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true // Automatically gets converted to SERIAL for postgres
+    },
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
