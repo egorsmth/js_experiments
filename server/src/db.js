@@ -23,6 +23,8 @@ async function init() {
 
   getUser().belongsToMany(getProduct(), { through: getPurchase() });
   getProduct().belongsToMany(getUser(), { through: getPurchase() });
+  getPurchase().belongsTo(getProduct(), { foreignKey: 'productId' });
+  getPurchase().belongsTo(getUser(), { foreignKey: 'userId' });
 
   await db.sync({
     alter: true,

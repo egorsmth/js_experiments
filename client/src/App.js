@@ -12,15 +12,13 @@ import Registration from './components/registrationForm';
 export default class App extends React.Component {
   render() {
     return (
-      <div>
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/logout" component={Logout} />
-          <Route exact path="/registration" component={Registration} />
-          <Route exact path={config.routs.dashboard} component={Dashboard} />
-        </Switch>
-      </div>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route exact path="/login" component={Login} />
+        <Route exact path="/logout" component={Logout} />
+        <Route exact path="/registration" component={Registration} />
+        <Route exact path={config.routs.dashboard} component={Dashboard} />
+      </Switch>
     );
   }
 }

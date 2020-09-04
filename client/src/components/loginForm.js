@@ -1,5 +1,7 @@
 import React from "react";
 
+import { Container, TextField, Button, Box } from "@material-ui/core"
+
 import config from "../config";
 import { login } from "../services/auth";
 import { Link } from "react-router-dom";
@@ -57,26 +59,46 @@ export default class LoginForm extends React.Component {
     if (this.state.password.error) passError = <p style={{ color: 'red' }}>{this.state.password.error}</p>
 
     return (
-      <div>
+      <Container maxWidth="sm">
         <h1>Login</h1>
         <form onSubmit={this.handleSubmit}>
-          <label>Username
-            <br></br>
-            {nameError}
-            <input type="text" name="username" value={this.state.username.value} onChange={this.handleChange}></input>
-            <br></br>
-          </label>
-          <label>Password
-            <br></br>
-            {passError}
-            <input type="password" name="password" value={this.state.password.value} onChange={this.handleChange}></input>
-            <br></br>
-          </label>
-          <input type="submit" value="Sign in"></input>
+          {nameError}
+          <Box m={1, 1, 1, 1}>
+            <TextField
+              required
+              label="Username"
+              name="username"
+              value={this.state.username.value}
+              onChange={this.handleChange}
+              variant="outlined"
+            />
+          </Box>
+          
+          {passError}
+          <Box m={1, 1, 1, 1}>
+            <TextField
+              required
+              label="Password"
+              name="password"
+              value={this.state.password.value}
+              onChange={this.handleChange}
+              variant="outlined"
+            />
+          </Box>
+
+          <Box m={1, 1, 1, 1}>
+            <Button type="submit" variant="contained" color="primary">
+              Sign in
+            </Button>
+          </Box>
         </form>
-        <p>{loading}</p>
-        <Link to={config.routs.registration}>Sign Up</Link>
-      </div>
+        <Box m={1, 1, 1, 1}>
+          <Button variant="contained">
+            <Link to={config.routs.registration}>Sign Up</Link>
+          </Button>
+        </Box>
+
+      </Container>
     );
   }
 }

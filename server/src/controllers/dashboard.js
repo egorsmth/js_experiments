@@ -1,14 +1,30 @@
+const { Sequelize } = require('sequelize');
+
 const { getLogger } = require('../logger')
 const { getUser } = require('../enteties/user');
 const { getProduct } = require('../enteties/product');
 const { getPurchase } = require('../enteties/purchase');
 
 async function dashboard(req, res) {
-    const users = await getUser().findAll({ include:{
-        model: getProduct(), 
-        right: true
-    } });
-    res.send(users);
+    const users = await getUser().findAll({
+        include: {
+            model: getProduct(),
+            right: true
+        }
+    });
+
+
+
+    const products = await getPurchase().findAll({
+        group: ["product.id"],
+        attributes: [
+            [Sequelize.fn('SUM', Sequelize.col('quantity')), 'q']
+        ],
+        include: {
+            model: getProduct(),
+        }
+    })
+    res.send({users, products});
 }
 
 

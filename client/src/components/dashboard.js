@@ -1,9 +1,13 @@
 import React from "react";
 
 import { Link } from "react-router-dom";
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { TableBody, TableContainer, TableHead, Paper, TableRow, TableCell, Box, Button, Container, Select, MenuItem, FormControl } from "@material-ui/core";
+import { makeStyles } from '@material-ui/core/styles';
 
 import config from "../config"
 import { dashboard, getUsers, getProducts, createPurchase } from '../services/dashboard'
+
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -41,14 +45,16 @@ class Dashboard extends React.Component {
 
   handleChange(event) {
     event.preventDefault();
-    
+
     const state = { ...this.state };
-    state[event.target.name] = event.target.value;
+    state[event.target.name] = parseInt(event.target.value);
     this.setState(state);
   }
 
   async handleSubmit(event) {
     event.preventDefault();
+    if (!this.state.user || !this.state.product || !this.state.quantity || !Number.isInteger(this.state.quantity))
+      return;
 
     await createPurchase(this.state.user, this.state.product, this.state.quantity);
     const data = await dashboard();
@@ -59,41 +65,84 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    let data;
-    if (this.state.loading) {
-      data = <img src={process.env.PUBLIC_URL + '/loading.gif'} width='60' height='50' />
-    } else {
-      data = <div>
-        {this.state.data.map(x => x.name)}
-      </div>
+    let data = [];
+    if (!this.state.loading) {
+      data = this.state.data.users.map(user => {
+        return {
+          name: user.name,
+          purchases: user.products ? user.products.length : 0,
+        }
+      })
     }
-
-    let usersSelect = [];
-    let productSelect = [];
-    for (let user of this.state.users) {
-      usersSelect.push(<option key={user.id} value={user.id}>{user.name}</option>);
-    }
-    for (let product of this.state.products) {
-      productSelect.push(<option key={product.id} value={product.id}>{product.name} - {product.price} $</option>);
+    let chart;
+    if (this.state.data.products) {
+      chart = (<LineChart width={400} height={200} data={this.state.data.products.map(x => ({
+        x: x.product.id,
+        y: x.q,
+        name: x.product.name,
+      }))} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+        <Line type="monotone" dataKey="y" stroke="#8884d8" />
+        <CartesianGrid stroke="#ccc" />
+        <XAxis dataKey="name" />
+        <YAxis domain={[0, 50]} />
+        <Tooltip />
+      </LineChart>)
     }
 
     return (
-      <div>
-        <Link to={config.routs.logout}>logout</Link>
-        This is Dashboard
-        {data}
+      <Container maxWidth="lg">
+        <Box m={1, 1, 1, 1}>
+          <Button variant="contained">
+            <Link to={config.routs.logout}>logout</Link>
+          </Button>
+        </Box>
+
+        <Box m={1, 1, 1, 1}>
+          <TableContainer component={Paper}>
+            <TableHead>
+              <TableCell>Name</TableCell>
+              <TableCell align="right">Purchases</TableCell>
+            </TableHead>
+            <TableBody>
+              {data.map(row => (
+                <TableRow key={row.name}>
+                  <TableCell component="th" scope="row">
+                    {row.name}
+                  </TableCell>
+                  <TableCell align="right">{row.purchases}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </TableContainer>
+        </Box>
 
         <form onSubmit={this.handleSubmit}>
-          <select name="user" onChange={this.handleChange}>
-            {usersSelect}
-          </select>
-          <select name="product" onChange={this.handleChange}>
-            {productSelect}
-          </select>
-          <input name="quantity" type="text" onChange={this.handleChange}></input>
-          <input type="submit" value="Add"></input>
+          <FormControl style={{
+            margin: 1,
+            minWidth: 120,
+          }}>
+            <Select
+              labelId="demo-simple-select-label"
+              name="user"
+              onChange={this.handleChange}
+            >
+              {this.state.users.map(user => (<MenuItem key={user.id} value={user.id}>{user.name}</MenuItem>))}
+            </Select>
+
+            <Select
+              labelId="demo-simple-select-label"
+              name="product"
+              onChange={this.handleChange}
+            >
+              {this.state.products.map(product => (<MenuItem key={product.id} value={product.id}>{product.name} - {product.price} $</MenuItem>))}
+            </Select>
+            <Button type="submit" variant="contained">Add</Button>
+          </FormControl>
         </form>
-      </div>
+        <Box m={1, 1, 1, 1}>
+          {chart}
+        </Box>
+      </Container>
     );
   }
 }
